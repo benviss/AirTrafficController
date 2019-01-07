@@ -8,6 +8,8 @@ Instructions:
 -Aircraft's need to leave opposite the direction they enter the map .
 -Do your job and prevent incidents! 
 
+Play the game at: https://www.kongregate.com/games/fostermatt82/days-since-last-incident
+
 ## Created By
   -Ben Vissotzky: Programmer
   -Matt Nicholas: Programmer
