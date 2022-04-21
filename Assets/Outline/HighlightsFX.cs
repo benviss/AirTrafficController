@@ -1,23 +1,23 @@
-﻿using UnityEngine;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.Rendering;
 
 [RequireComponent(typeof(Camera))]
-public class HighlightsFX : MonoBehaviour 
+public class HighlightsFX : MonoBehaviour
 {
-	#region enums
+    #region enums
 
-	public enum HighlightType
-	{
-		Glow = 0,
-		Solid = 1
-	}
+    public enum HighlightType
+    {
+        Glow = 0,
+        Solid = 1
+    }
 
-	public enum SortingType
-	{
-		Overlay = 3,
-		DepthFiltered = 4,
-	}
+    public enum SortingType
+    {
+        Overlay = 3,
+        DepthFiltered = 4,
+    }
 
     public enum DepthInvertPass
     {
@@ -25,17 +25,17 @@ public class HighlightsFX : MonoBehaviour
         StencilDrawer = 6
     }
 
-	public enum FillType
-	{
-		Fill,
-		Outline
-	}
-	public enum RTResolution
-	{
-		Quarter = 4,
-		Half = 2,
-		Full = 1
-	}
+    public enum FillType
+    {
+        Fill,
+        Outline
+    }
+    public enum RTResolution
+    {
+        Quarter = 4,
+        Half = 2,
+        Full = 1
+    }
 
     public enum BlurType
     {
@@ -56,8 +56,8 @@ public class HighlightsFX : MonoBehaviour
     [Header("Outline Settings")]
 
     public HighlightType m_selectionType = HighlightType.Glow;
-	public FillType m_fillType = FillType.Outline;
-	public RTResolution m_resolution = RTResolution.Full;
+    public FillType m_fillType = FillType.Outline;
+    public RTResolution m_resolution = RTResolution.Full;
     [Range(0f, 1f)]
     public float m_controlValue = 0.5f;
     public CameraEvent BufferDrawEvent = CameraEvent.BeforeImageEffects;
@@ -71,7 +71,7 @@ public class HighlightsFX : MonoBehaviour
     public float blurSize = 3.0f;
     [Range(1, 4)]
     public int blurIterations = 2;
-    
+
 
     #endregion
 
@@ -84,11 +84,11 @@ public class HighlightsFX : MonoBehaviour
     private Dictionary<List<Renderer>, OutlineData> m_objectRenderers;
     private List<List<Renderer>> m_objectExcluders;
 
-    private Material m_highlightMaterial, m_blurMaterial;		
+    private Material m_highlightMaterial, m_blurMaterial;
     private Camera m_camera;
 
-	private int m_RTWidth = 512;
-	private int m_RTHeight = 512;
+    private int m_RTWidth = 512;
+    private int m_RTHeight = 512;
 
     private RenderTexture m_highlightRT, m_blurredRT, m_temporaryRT;
 
@@ -97,13 +97,13 @@ public class HighlightsFX : MonoBehaviour
     public void AddRenderers(List<Renderer> renderers, Color col, SortingType sorting)
     {
         var data = new OutlineData() { color = col, sortingType = sorting };
-        m_objectRenderers.Add(renderers, data);      
+        m_objectRenderers.Add(renderers, data);
         RecreateCommandBuffer();
     }
 
     public void RemoveRenderers(List<Renderer> renderers)
     {
-        m_objectRenderers.Remove(renderers);      
+        m_objectRenderers.Remove(renderers);
         RecreateCommandBuffer();
     }
 
@@ -127,7 +127,7 @@ public class HighlightsFX : MonoBehaviour
     }
 
     private void Awake()
-	{
+    {
         m_objectRenderers = new Dictionary<List<Renderer>, OutlineData>();
         m_objectExcluders = new List<List<Renderer>>();
 
@@ -138,8 +138,8 @@ public class HighlightsFX : MonoBehaviour
         m_blurredRTID = Shader.PropertyToID("_BlurredRT");
         m_temporaryRTID = Shader.PropertyToID("_TemporaryRT");
 
-        m_RTWidth = (int)(Screen.width / (float)m_resolution);
-        m_RTHeight = (int)(Screen.height / (float)m_resolution);
+        m_RTWidth = (int) (Screen.width / (float) m_resolution);
+        m_RTHeight = (int) (Screen.height / (float) m_resolution);
 
         m_highlightMaterial = new Material(Shader.Find("Custom/Highlight"));
         m_blurMaterial = new Material(Shader.Find("Hidden/FastBlur"));
@@ -147,7 +147,7 @@ public class HighlightsFX : MonoBehaviour
         m_camera = GetComponent<Camera>();
         m_camera.depthTextureMode = DepthTextureMode.Depth;
         m_camera.AddCommandBuffer(BufferDrawEvent, m_commandBuffer);
-	}
+    }
 
     private void RecreateCommandBuffer()
     {
@@ -169,7 +169,7 @@ public class HighlightsFX : MonoBehaviour
             m_commandBuffer.SetGlobalColor("_Color", collection.Value.color);
             foreach (var render in collection.Key)
             {
-                m_commandBuffer.DrawRenderer(render, m_highlightMaterial, 0, (int)collection.Value.sortingType);
+                m_commandBuffer.DrawRenderer(render, m_highlightMaterial, 0, (int) collection.Value.sortingType);
             }
         }
 
@@ -177,7 +177,7 @@ public class HighlightsFX : MonoBehaviour
 
         m_commandBuffer.SetGlobalColor("_Color", Color.clear);
         foreach (var collection in m_objectExcluders)
-        {         
+        {
             foreach (var render in collection)
             {
                 m_commandBuffer.DrawRenderer(render, m_highlightMaterial, 0, (int) SortingType.Overlay);
@@ -190,7 +190,7 @@ public class HighlightsFX : MonoBehaviour
 
         int rtW = m_RTWidth >> downsample;
         int rtH = m_RTHeight >> downsample;
-   
+
         m_commandBuffer.GetTemporaryRT(m_blurredRTID, rtW, rtH, 0, FilterMode.Bilinear, RenderTextureFormat.ARGB32);
         m_commandBuffer.GetTemporaryRT(m_temporaryRTID, rtW, rtH, 0, FilterMode.Bilinear, RenderTextureFormat.ARGB32);
 
@@ -228,7 +228,7 @@ public class HighlightsFX : MonoBehaviour
 
         // overlay
         m_commandBuffer.SetGlobalFloat("_ControlValue", m_controlValue);
-        m_commandBuffer.Blit(m_highlightRTID, BuiltinRenderTextureType.CameraTarget, m_highlightMaterial, (int)m_selectionType);
+        m_commandBuffer.Blit(m_highlightRTID, BuiltinRenderTextureType.CameraTarget, m_highlightMaterial, (int) m_selectionType);
         m_commandBuffer.ReleaseTemporaryRT(m_temporaryRTID);
         m_commandBuffer.ReleaseTemporaryRT(m_blurredRTID);
         m_commandBuffer.ReleaseTemporaryRT(m_highlightRTID);

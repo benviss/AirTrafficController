@@ -1,25 +1,28 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
-public class FlashingLight:MonoBehaviour {
+public class FlashingLight : MonoBehaviour
+{
 
-  public Light light;
+    public Light light;
 
-  public float flashTime = 1;
-  private float flashCounter;
+    public float flashTime = 1;
+    private float flashCounter;
 
-  void Start() {
-    light = GetComponent<Light>();
-  }
-
-  void Update() {
-    if(flashCounter < flashTime) {
-      flashCounter += Time.deltaTime;
+    void Start()
+    {
+        light = GetComponent<Light>();
     }
-    else {
-      light.enabled = !light.enabled;
-      flashCounter = 0;
+
+    void Update()
+    {
+        if (flashCounter < flashTime)
+        {
+            flashCounter += Time.deltaTime;
+        }
+        else
+        {
+            light.enabled = !light.enabled;
+            flashCounter = 0;
+        }
     }
-  }
 }
