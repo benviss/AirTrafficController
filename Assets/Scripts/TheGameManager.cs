@@ -39,16 +39,10 @@ public class TheGameManager : Singleton<TheGameManager>
 
     private void Update()
     {
-        if (Input.anyKeyDown)
+        if ((Time.timeScale == 0) &&
+            (Input.anyKeyDown))
         {
-            if (gameOver)
-            {
-                // ???
-            }
-            else if (Time.timeScale == 0)
-            {
-                StartGame();
-            }
+            StartGame();
         }
     }
 
