@@ -1,5 +1,8 @@
 ﻿using System.Collections.Generic;
+using System.Collections;
+using System.Linq;
 using UnityEngine;
+using UnityEditor;
 
 public class Plane : MonoBehaviour
 {
@@ -18,6 +21,11 @@ public class Plane : MonoBehaviour
     private Renderer rend;
     private Color outlineColor;
     private bool inWallCollider;
+    private bool alarming;
+    private float alarmTime = .3f;
+    private float alarmDistance = 8;
+    private Color alarmColor;
+    private Light alarmLight;
 
     enum Headings
     {
@@ -32,7 +40,19 @@ public class Plane : MonoBehaviour
         outlineHighlight = FindObjectOfType<Camera>().GetComponent<HighlightsFX>();
         rend = this.GetComponentInChildren<Renderer>();
         outlineColor = new Color(1f, 1f, 1f, 1f);
+        alarmColor = Color.red;
         nextHeading = currentHeading;
+
+        alarmLight = gameObject.AddComponent<Light>();
+        alarmLight.intensity = 1000;
+        alarmLight.range = 18;
+        alarmLight.type = LightType.Point;
+        alarmLight.color = alarmColor;
+        alarmLight.cullingMask = 0;
+        SerializedObject serializedlight = new SerializedObject(alarmLight);
+        serializedlight.FindProperty("m_DrawHalo").boolValue = true;
+        serializedlight.ApplyModifiedProperties();
+        alarmLight.enabled = false;
     }
 
     // Update is called once per frame
@@ -61,6 +81,37 @@ public class Plane : MonoBehaviour
                 SetCurrentHeading(nextHeading);
             }
         }
+
+        // scan for nearby obstacles
+        if (ScanForAirstacles() && !alarming)
+        {
+            StartCoroutine(Alarming());
+        }
+    }
+
+    IEnumerator Alarming()
+    {
+        alarming = true;
+        alarmLight.enabled = true;
+        yield return new WaitForSeconds(alarmTime);
+        alarmLight.enabled = false;
+        yield return new WaitForSeconds(alarmTime);
+        alarming = false;
+    }
+
+
+    bool ScanForAirstacles()
+    {
+        // 11 is the collidable layer
+        int layerMask = 11;
+        var box = new Vector3(1, 1, 1);
+
+        RaycastHit[] hits = Physics.BoxCastAll(transform.position + transform.forward*10, box*alarmDistance, Vector3.up);
+
+        var nearyAircraft = hits
+            .Where(h => (h.transform != this.transform) && h.transform.gameObject.layer == layerMask);
+
+        return nearyAircraft.Any();
     }
 
     Vector3 GetForwardMovement()

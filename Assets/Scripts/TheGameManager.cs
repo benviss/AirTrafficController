@@ -23,6 +23,8 @@ public class TheGameManager : Singleton<TheGameManager>
     private ScoreBoard scoreBoard;
     private IEnumerator coroutine;
 
+    public GameObject BlackoutWalls;
+
     private void Start()
     {
         Time.timeScale = 0;
@@ -32,6 +34,7 @@ public class TheGameManager : Singleton<TheGameManager>
         gameOverPanel.SetActive(false);
         scoreBoard = FindObjectOfType<ScoreBoard>();
         scoreBoard.SetScore(daysSinceLastIncident);
+        BlackoutWalls.SetActive(true);
     }
 
     private void Update()
