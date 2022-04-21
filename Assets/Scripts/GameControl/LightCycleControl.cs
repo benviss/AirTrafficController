@@ -28,6 +28,10 @@ public class LightCycleControl : MonoBehaviour
             dayTime -= dayLength;
             TheGameManager.Instance.IncrementDay();
         }
+        if (dayTime *2 > dayLength)
+        {
+            TheGameManager.Instance.IncrementHalfDay();
+        }
     }
 
     void CalculateAngles()

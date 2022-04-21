@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class TheGameManager : Singleton<TheGameManager>
 {
-    public int maxCraftsOnScreen = 4;
+    public int maxCraftsOnScreen;
     [HideInInspector]
     public int daysSinceLastIncident;
     public int planesCollected;
@@ -29,7 +29,7 @@ public class TheGameManager : Singleton<TheGameManager>
     {
         Time.timeScale = 0;
         gameOver = false;
-        ReCalcMaxCrafts();
+        maxCraftsOnScreen = 5;
         introPanel.SetActive(true);
         gameOverPanel.SetActive(false);
         scoreBoard = FindObjectOfType<ScoreBoard>();
@@ -67,25 +67,41 @@ public class TheGameManager : Singleton<TheGameManager>
             scoreBoard.SetScore(daysSinceLastIncident);
         }
 
-        if (daysSinceLastIncident == 1) SpawnManager.Instance.AddSpawnable(firstNewCraft);
-        if (daysSinceLastIncident == 3) SpawnManager.Instance.AddSpawnable(secondNewCraft);
-        if (daysSinceLastIncident == 5) SpawnManager.Instance.AddSpawnable(thirdNewCraft);
-
-        // Every two days do... something
-        if (daysSinceLastIncident % 2 == 0)
+        switch (daysSinceLastIncident)
         {
-            if (SpawnManager.Instance.spawnWaitTime > 1)
+            case 1:
             {
-                SpawnManager.Instance.spawnWaitTime -= 1;
+                SpawnManager.Instance.AddSpawnable(firstNewCraft);
+                break;
+            }
+            case 3:
+            {
+                SpawnManager.Instance.AddSpawnable(secondNewCraft);
+                break;
+            }
+            case 5:
+            {
+                SpawnManager.Instance.AddSpawnable(thirdNewCraft);
+                break;
             }
         }
-        else
+
+        // Every two days increase spawn speed multipler
+        if (daysSinceLastIncident % 2 == 1)
         {
-            // Every other day increase speed multipler
             SpawnManager.Instance.speedMultiplier += 1;
         }
 
         ReCalcMaxCrafts();
+    }
+
+    public void IncrementHalfDay()
+    {
+        // every other night add a craft
+        if (daysSinceLastIncident % 2 == 0)
+        {
+            ReCalcMaxCrafts();
+        }
     }
 
     public void ReCalcMaxCrafts()
