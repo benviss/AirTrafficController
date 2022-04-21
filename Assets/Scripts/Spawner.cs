@@ -48,15 +48,11 @@ public class Spawner : MonoBehaviour
         return true;
     }
 
-    public Plane SpawnPlane()
+    public Plane SpawnPlane(Transform aircraftTransform, int speedMultipler)
     {
-        //choose an aircraft and instantiate the game object at this spawners position and rotation
-        int randy = Mathf.Abs(Random.Range(0, SpawnManager.Instance.aircrafts.Count) - Random.Range(0, SpawnManager.Instance.aircrafts.Count));
-        //int randy = Mathf.RoundToInt(Mathf.Floor(Mathf.Abs(Random.Range(0, 1) - Random.Range(0, 1)) * ((Random.Range(0, 1) + 2) - SpawnManager.Instance.aircrafts.Count) + SpawnManager.Instance.aircrafts.Count));
+        Plane newPlane = Instantiate(aircraftTransform, transform.position, transform.rotation).GetComponent<Plane>();
 
-        Plane newPlane = Instantiate(SpawnManager.Instance.aircrafts[randy], transform.position, transform.rotation).GetComponent<Plane>();
-
-        newPlane.InitAircraft(SpawnManager.Instance.speedMultiplier, wallSide);
+        newPlane.InitAircraft(speedMultipler, wallSide);
 
         return newPlane;
     }
