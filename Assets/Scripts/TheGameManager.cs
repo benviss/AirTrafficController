@@ -59,7 +59,10 @@ public class TheGameManager : Singleton<TheGameManager>
     {
         daysSinceLastIncident++;
 
-        scoreBoard.SetScore(daysSinceLastIncident);
+        if (!gameOver)
+        {
+            scoreBoard.SetScore(daysSinceLastIncident);
+        }
 
         if (daysSinceLastIncident == 1) SpawnManager.Instance.AddSpawnable(firstNewCraft);
         if (daysSinceLastIncident == 3) SpawnManager.Instance.AddSpawnable(secondNewCraft);
