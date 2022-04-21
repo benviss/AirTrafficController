@@ -33,11 +33,8 @@ public class SpawnManager : Singleton<SpawnManager>
         upperTimeLimit = Mathf.Clamp(upperTimeLimit, minMaxSpawnDelay, upperTimeLimit);
         var spawnDelay = Random.Range(minMinimumSpawnDelay, upperTimeLimit);
 
-        Debug.Log($"upperlimit {upperTimeLimit} seconds");
-        Debug.Log($"waiting {spawnDelay} seconds");
         yield return new WaitForSeconds(spawnDelay);
 
-        Debug.Log($"attempting spawn {this.gameObject.GetInstanceID()}");
         if (planes.Count < TheGameManager.Instance.maxCraftsOnScreen)
         {
             SpawnPlane();
