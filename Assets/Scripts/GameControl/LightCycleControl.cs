@@ -1,9 +1,7 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
-public class LightCycleControl : MonoBehaviour {
-
+public class LightCycleControl : MonoBehaviour
+{
     public float dayTime = 8000f;
     public float gameSpeed = 1;
     public float tiltAngle = 10f;
@@ -12,26 +10,36 @@ public class LightCycleControl : MonoBehaviour {
 
     public Light daySource;
     public Light nightSource;
+
     private float dayLength = 86400f;
 
-    void Update() {
+    void Update()
+    {
         UpdateTime();
         CalculateAngles();
         SmoothLights();
     }
 
-    void UpdateTime() {
+    void UpdateTime()
+    {
         dayTime += Time.deltaTime * gameSpeed;
-        if (dayTime > dayLength) {
+        if (dayTime > dayLength)
+        {
             dayTime -= dayLength;
             TheGameManager.Instance.IncrementDay();
         }
+        if (((dayTime - Time.deltaTime) * 2 < dayLength) &&
+            (dayTime * 2 > dayLength))
+        {
+            TheGameManager.Instance.IncrementHalfDay();
+        }
     }
 
-    void CalculateAngles() {
+    void CalculateAngles()
+    {
         float dayPercentage = dayTime / dayLength;
         float x = Mathf.Cos(dayPercentage * Mathf.PI * 2);
-        float y = Mathf.Sin(dayPercentage * Mathf.PI * 2) + (percentDay -.5f) * 2;
+        float y = Mathf.Sin(dayPercentage * Mathf.PI * 2) + (percentDay - .5f) * 2;
 
         daySource.transform.position = new Vector3(x, y, -y * (tiltAngle / 90));
         nightSource.transform.position = new Vector3(-x, -y, y * (tiltAngle / 90));
@@ -40,11 +48,14 @@ public class LightCycleControl : MonoBehaviour {
         nightSource.transform.LookAt(Vector3.zero);
     }
 
-    void SmoothLights() {
-        if (daySource.transform.position.y < 0) {
+    void SmoothLights()
+    {
+        if (daySource.transform.position.y < 0)
+        {
             daySource.intensity = 1 + daySource.transform.position.y;
         }
-        else {
+        else
+        {
             nightSource.intensity = (1 + nightSource.transform.position.y) * .5f;
         }
     }

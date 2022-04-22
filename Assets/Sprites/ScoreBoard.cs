@@ -1,24 +1,24 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
-public class ScoreBoard : MonoBehaviour {
+public class ScoreBoard : MonoBehaviour
+{
+    public static TextMesh scoreText;
 
-  public static TextMesh scoreText;
+    public void SetScore(int score)
+    {
 
+        scoreText.text = score.ToString();
+    }
 
-  public void SetScore(int score) {
+    // Use this for initialization
+    void Start()
+    {
+        scoreText = GetComponent<TextMesh>();
+    }
 
-    scoreText.text = score.ToString();
-  }
+    // Update is called once per frame
+    void Update()
+    {
 
-	// Use this for initialization
-	void Start () {
-    scoreText = GetComponent<TextMesh>();
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
+    }
 }

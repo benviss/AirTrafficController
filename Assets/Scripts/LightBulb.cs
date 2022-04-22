@@ -1,15 +1,16 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
-public class LightBulb:MonoBehaviour {
+public class LightBulb : MonoBehaviour
+{
+    Renderer rend;
 
-  Renderer rend;
-  private void Start() {
-    rend = GetComponent<Renderer>();
-  }
+    private void Start()
+    {
+        rend = GetComponent<Renderer>();
+    }
 
-  public void SetColor(Color color) {
-    rend.material.color = color;
-  }
+    public void SetColor(Color color)
+    {
+        rend.material.color = color;
+    }
 }

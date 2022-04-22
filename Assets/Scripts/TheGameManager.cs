@@ -1,101 +1,131 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-public class TheGameManager:Singleton<TheGameManager> {
-  public int maxCraftsOnScreen = 4;
-  [HideInInspector]
-  public int daysSinceLastIncident;
-  public int planesCollected;
+public class TheGameManager : Singleton<TheGameManager>
+{
+    public int maxCraftsOnScreen;
+    [HideInInspector]
+    public int daysSinceLastIncident;
+    public int planesCollected;
 
-  public GameObject gameOverPanel;
-  public Button gameOverButton;
-  public Text gameOverText;
+    public GameObject gameOverPanel;
+    public Button gameOverButton;
+    public Text gameOverText;
 
-  public GameObject introPanel;
-  public Transform firstNewCraft;
-  public Transform secondNewCraft;
-  public Transform thirdNewCraft;
-  public bool gameOver = false;
+    public GameObject introPanel;
+    public Transform firstNewCraft;
+    public Transform secondNewCraft;
+    public Transform thirdNewCraft;
+    public bool gameOver = false;
 
-  private ScoreBoard scoreBoard;
-  private IEnumerator coroutine;
+    private ScoreBoard scoreBoard;
+    private IEnumerator coroutine;
 
-  private void Start() {
-    Time.timeScale = 0;
-    gameOver = false;
-    ReCalcMaxCrafts();
-    gameOverPanel.SetActive(false);
-    scoreBoard = FindObjectOfType<ScoreBoard>();
-    scoreBoard.SetScore(daysSinceLastIncident);
-  }
+    public GameObject BlackoutWalls;
 
-  private void Update() {
-
-    if(Input.anyKeyDown) {
-      if(gameOver) {
-        
-        
-      }
-      else if(Time.timeScale == 0) {
-        StartGame();
-      }
-    }
-  }
-
-  public void StartGame() {
-    Time.timeScale = 1;
-    introPanel.SetActive(false);
-  }
-
-  public void IncrementDay() {
-
-    daysSinceLastIncident++;
-
-    scoreBoard.SetScore(daysSinceLastIncident);
-
-    if(daysSinceLastIncident == 1) SpawnManager.Instance.AddSpawnable(firstNewCraft);
-    if(daysSinceLastIncident == 3) SpawnManager.Instance.AddSpawnable(secondNewCraft);
-    if(daysSinceLastIncident == 5) SpawnManager.Instance.AddSpawnable(thirdNewCraft);
-
-    if(daysSinceLastIncident % 2 == 0) {
-      if(SpawnManager.Instance.spawnWaitTime > 1) {
-        SpawnManager.Instance.spawnWaitTime -= 1;
-      }
-    }
-    else {
-      SpawnManager.Instance.speedMultiplier += 1;
+    private void Start()
+    {
+        Time.timeScale = 0;
+        gameOver = false;
+        maxCraftsOnScreen = 4;
+        introPanel.SetActive(true);
+        gameOverPanel.SetActive(false);
+        scoreBoard = FindObjectOfType<ScoreBoard>();
+        scoreBoard.SetScore(daysSinceLastIncident);
+        BlackoutWalls.SetActive(true);
     }
 
-    ReCalcMaxCrafts();
-  }
+    private void Update()
+    {
+        if ((Time.timeScale == 0) &&
+            (Input.anyKeyDown))
+        {
+            StartGame();
+        }
+    }
 
-  public void ReCalcMaxCrafts() {
-    //maxCraftsOnScreen = (int)(Mathf.Pow((float)daysSinceLastIncident + 1, 1.3f) + (daysSinceLastIncident + 1) * 2.5);
-    maxCraftsOnScreen += 1;
-  }
+    public void StartGame()
+    {
+        Time.timeScale = 1;
+        introPanel.SetActive(false);
+    }
 
-  public void GameOver() {
-    if(gameOver) return;
+    public void IncrementDay()
+    {
+        daysSinceLastIncident++;
 
-    gameOver = true;
-    gameOverPanel.SetActive(true);
-    string finalText = daysSinceLastIncident + " Days Since Last Incident";
-    gameOverText.text = finalText;
-    gameOverButton.gameObject.SetActive(true);
-    //StartCoroutine(DisplayRestartButton(2));
-  }
+        if (!gameOver)
+        {
+            scoreBoard.SetScore(daysSinceLastIncident);
+        }
 
-  IEnumerator DisplayRestartButton(float time) {
-    gameOverButton.gameObject.SetActive(false);
-    yield return new WaitForSeconds(time);
-    gameOverButton.gameObject.SetActive(true);
-  }
+        switch (daysSinceLastIncident)
+        {
+            case 1:
+            {
+                SpawnManager.Instance.AddSpawnable(firstNewCraft);
+                break;
+            }
+            case 3:
+            {
+                SpawnManager.Instance.AddSpawnable(secondNewCraft);
+                break;
+            }
+            case 5:
+            {
+                SpawnManager.Instance.AddSpawnable(thirdNewCraft);
+                break;
+            }
+        }
 
-  public void ResetGame() {
-    gameOverPanel.SetActive(false);
-    SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-  }
+        // Every two days increase spawn speed multipler
+        if (daysSinceLastIncident % 2 == 1)
+        {
+            SpawnManager.Instance.speedMultiplier += 1;
+        }
+
+        ReCalcMaxCrafts();
+    }
+
+    public void IncrementHalfDay()
+    {
+        // every other night add a craft
+        if (daysSinceLastIncident % 2 == 0)
+        {
+            ReCalcMaxCrafts();
+        }
+    }
+
+    public void ReCalcMaxCrafts()
+    {
+        //maxCraftsOnScreen = (int)(Mathf.Pow((float)daysSinceLastIncident + 1, 1.3f) + (daysSinceLastIncident + 1) * 2.5);
+        maxCraftsOnScreen += 1;
+    }
+
+    public void GameOver()
+    {
+        if (gameOver) return;
+
+        gameOver = true;
+        gameOverPanel.SetActive(true);
+        string finalText = daysSinceLastIncident + " Days Since Last Incident";
+        gameOverText.text = finalText;
+        gameOverButton.gameObject.SetActive(true);
+        //StartCoroutine(DisplayRestartButton(2));
+    }
+
+    IEnumerator DisplayRestartButton(float time)
+    {
+        gameOverButton.gameObject.SetActive(false);
+        yield return new WaitForSeconds(time);
+        gameOverButton.gameObject.SetActive(true);
+    }
+
+    public void ResetGame()
+    {
+        gameOverPanel.SetActive(false);
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
 }
