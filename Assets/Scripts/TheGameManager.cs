@@ -29,7 +29,7 @@ public class TheGameManager : Singleton<TheGameManager>
     {
         Time.timeScale = 0;
         gameOver = false;
-        maxCraftsOnScreen = 5;
+        maxCraftsOnScreen = 4;
         introPanel.SetActive(true);
         gameOverPanel.SetActive(false);
         scoreBoard = FindObjectOfType<ScoreBoard>();

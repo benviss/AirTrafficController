@@ -37,7 +37,14 @@ public class SpawnManager : Singleton<SpawnManager>
 
         if (planes.Count < TheGameManager.Instance.maxCraftsOnScreen)
         {
-            SpawnPlane();
+            try
+            {
+                SpawnPlane();
+            }
+            catch
+            {
+                Debug.LogWarning("exception on spawning plane");
+            }
         }
 
         StartCoroutine(SpawnPlanes());
