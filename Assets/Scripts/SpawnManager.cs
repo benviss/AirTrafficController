@@ -15,7 +15,7 @@ public class SpawnManager : Singleton<SpawnManager>
     private float defaultMaxSpawnDelay = 3;
     private float minMaxSpawnDelay = 1;
     private float minMinimumSpawnDelay = .1f;
-    private int spawnRetries = 3;
+    private int spawnRetries = 5;
 
     private void Start()
     {
