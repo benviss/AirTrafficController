@@ -82,8 +82,8 @@ public class Plane : MonoBehaviour
             }
         }
 
-        // scan for nearby obstacles
-        if (ScanForAirstacles() && !alarming)
+        // scan for nearby obstacles (geese wont alarm)
+        if (!alarming && !this.transform.tag.Equals("Airstacles") && ScanForAirstacles())
         {
             StartCoroutine(Alarming());
         }
@@ -246,7 +246,7 @@ public class Plane : MonoBehaviour
             //if it is correct collector tell game manager of success and destroy aircraft
             if (other.gameObject.GetComponent<Collector>().side == finalDestination)
             {
-                gameObject.transform.parent.gameObject.GetComponent<SpawnManager>().KillMe(this);
+                SpawnManager.Instance.KillMe(this);
                 TheGameManager.Instance.planesCollected++;
                 Destroy(gameObject);
             }
