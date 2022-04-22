@@ -72,3 +72,4 @@ crashlytics-build.properties
 /[Aa]ssets/[Ss]treamingAssets/aa/*
 Library/ScriptAssemblies/Assembly-CSharp.dll
 *.dll
+Library/ScriptAssemblies/Assembly-CSharp.dll

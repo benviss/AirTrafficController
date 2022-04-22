@@ -28,7 +28,8 @@ public class LightCycleControl : MonoBehaviour
             dayTime -= dayLength;
             TheGameManager.Instance.IncrementDay();
         }
-        if (dayTime *2 > dayLength)
+        if (((dayTime - Time.deltaTime) * 2 < dayLength) &&
+            (dayTime * 2 > dayLength))
         {
             TheGameManager.Instance.IncrementHalfDay();
         }
