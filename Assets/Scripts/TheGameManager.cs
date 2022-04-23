@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -37,10 +38,9 @@ public class TheGameManager : Singleton<TheGameManager>
         BlackoutWalls.SetActive(true);
     }
 
-    private void Update()
+    internal void MouseClicked()
     {
-        if ((Time.timeScale == 0) &&
-            (Input.anyKeyDown))
+        if (Time.timeScale == 0)
         {
             StartGame();
         }
