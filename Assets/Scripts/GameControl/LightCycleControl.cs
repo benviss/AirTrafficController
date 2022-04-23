@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 public class LightCycleControl : MonoBehaviour
 {
@@ -13,6 +14,16 @@ public class LightCycleControl : MonoBehaviour
 
     private float dayLength = 86400f;
 
+    private void Start()
+    {
+        App.Instance.OnNewGame += HandleNewGameStarted;
+    }
+
+    private void HandleNewGameStarted()
+    {
+        dayTime = 8000f;
+    }
+
     void Update()
     {
         UpdateTime();
@@ -26,12 +37,12 @@ public class LightCycleControl : MonoBehaviour
         if (dayTime > dayLength)
         {
             dayTime -= dayLength;
-            TheGameManager.Instance.IncrementDay();
+            App.Instance.IncrementDay();
         }
         if (((dayTime - Time.deltaTime) * 2 < dayLength) &&
             (dayTime * 2 > dayLength))
         {
-            TheGameManager.Instance.IncrementHalfDay();
+            App.Instance.IncrementHalfDay();
         }
     }
 

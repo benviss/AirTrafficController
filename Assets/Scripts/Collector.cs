@@ -12,30 +12,23 @@ public class Collector : MonoBehaviour
 
     public WallSide side;
 
-    // Use this for initialization
     void Start()
     {
         if (gameObject.name == "Top")
         {
             side = WallSide.Top;
         }
-        if (gameObject.name == "Right")
+        else if (gameObject.name == "Right")
         {
             side = WallSide.Right;
         }
-        if (gameObject.name == "Bottom")
+        else if (gameObject.name == "Bottom")
         {
             side = WallSide.Bottom;
         }
-        if (gameObject.name == "Left")
+        else if (gameObject.name == "Left")
         {
             side = WallSide.Left;
         }
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
     }
 }

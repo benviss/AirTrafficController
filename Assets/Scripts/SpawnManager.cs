@@ -3,23 +3,36 @@ using System.Collections;
 
 using UnityEngine;
 
-public class SpawnManager : Singleton<SpawnManager>
+public class SpawnManager : MonoBehaviour
 {
-    public List<int> tempCounter = new List<int>();
     public int speedMultiplier = 1;
-    public List<Transform> aircrafts = new List<Transform>();
+    public List<Transform> spawnableAircrafts = new List<Transform>();
     public List<Plane> planes;
     public float spawnWaitTime = 5;
 
-    private Spawner[] spawners;
-    private float defaultMaxSpawnDelay = 3;
-    private float minMaxSpawnDelay = 1;
-    private float minMinimumSpawnDelay = .1f;
-    private int spawnRetries = 5;
+    private Spawner[] _spawners;
 
-    private void Start()
+    private const float _defaultMaxSpawnDelay = 3;
+    private const float _minMaxSpawnDelay = 1;
+    private const float _minMinimumSpawnDelay = .1f;
+    private const int spawnRetries = 5;
+
+    private void Awake()
     {
-        spawners = FindObjectsOfType<Spawner>();
+        _spawners = GetComponentsInChildren<Spawner>();
+    }
+
+    public void StartSpawner()
+    {
+        // clean up and planes before starting to spawn new ones
+        foreach (var plane in planes)
+        {
+            Destroy(plane.gameObject);
+        }
+
+        speedMultiplier = 1;
+        spawnWaitTime = 5;
+
         planes = new List<Plane>();
 
         SpawnPlane();
@@ -29,13 +42,13 @@ public class SpawnManager : Singleton<SpawnManager>
 
     IEnumerator SpawnPlanes()
     {
-        var upperTimeLimit = defaultMaxSpawnDelay - .25f * TheGameManager.Instance.maxCraftsOnScreen;
-        upperTimeLimit = Mathf.Clamp(upperTimeLimit, minMaxSpawnDelay, upperTimeLimit);
-        var spawnDelay = Random.Range(minMinimumSpawnDelay, upperTimeLimit);
+        var upperTimeLimit = _defaultMaxSpawnDelay - .25f * App.Instance.maxCraftsOnScreen;
+        upperTimeLimit = Mathf.Clamp(upperTimeLimit, _minMaxSpawnDelay, upperTimeLimit);
+        var spawnDelay = Random.Range(_minMinimumSpawnDelay, upperTimeLimit);
 
         yield return new WaitForSeconds(spawnDelay);
 
-        if (planes.Count < TheGameManager.Instance.maxCraftsOnScreen)
+        if (planes.Count < App.Instance.maxCraftsOnScreen)
         {
             try
             {
@@ -52,7 +65,7 @@ public class SpawnManager : Singleton<SpawnManager>
 
     public void AddSpawnable(Transform newCraft)
     {
-        aircrafts.Add(newCraft);
+        spawnableAircrafts.Add(newCraft);
     }
 
     void SpawnPlane()
@@ -60,14 +73,15 @@ public class SpawnManager : Singleton<SpawnManager>
         for (int i=0; i<spawnRetries; i++)
         {
             // TODO add chance to spawn an intentional collision course
-            int randomSpawner = Random.Range(0, spawners.Length);
+            int randomSpawner = Random.Range(0, _spawners.Length);
 
-            if (spawners[randomSpawner].CanSpawnPlane())
+            if (_spawners[randomSpawner].CanSpawnPlane())
             {
-                int randomAircraft = Random.Range(0, aircrafts.Count);
+                int randomAircraft = Random.Range(0, spawnableAircrafts.Count);
 
-                Plane newPlane = spawners[randomSpawner].SpawnPlane(aircrafts[randomAircraft], speedMultiplier);
+                Plane newPlane = _spawners[randomSpawner].SpawnPlane(spawnableAircrafts[randomAircraft], speedMultiplier);
                 newPlane.transform.parent = transform;
+                newPlane.OnPlaneCrashed += HandlePlaneCrashed;
                 planes.Add(newPlane);
                 return;
             }
@@ -76,7 +90,7 @@ public class SpawnManager : Singleton<SpawnManager>
         Debug.Log("Could not spawn plane");
     }
 
-    public void KillMe(Plane plane)
+    public void HandlePlaneCrashed(Plane plane)
     {
         // we really ought to use a pool.
         planes.Remove(plane);
