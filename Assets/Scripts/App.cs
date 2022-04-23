@@ -4,8 +4,12 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-public class TheGameManager : Singleton<TheGameManager>
+public class App : Singleton<App>
 {
+    public readonly DynamicRefService DynamicRefs = new DynamicRefService();
+
+    public event Action OnNewGame;
+
     public int maxCraftsOnScreen;
     [HideInInspector]
     public int daysSinceLastIncident;
@@ -20,36 +24,68 @@ public class TheGameManager : Singleton<TheGameManager>
     public Transform secondNewCraft;
     public Transform thirdNewCraft;
     public bool gameOver = false;
+    public SceneController sceneController;
+    public bool gameStarted;
 
-    private ScoreBoard scoreBoard;
-    private IEnumerator coroutine;
+    private readonly DynamicRef<GameplayViewModel> _gameplayViewModel = DynamicRef.SearchByType<GameplayViewModel>();
 
-    public GameObject BlackoutWalls;
+    private void Awake()
+    {
+        sceneController = GetComponent<SceneController>();
+    }
 
     private void Start()
     {
+        sceneController.OnSceneLoaded += HandleSceneLoaded;
+        sceneController.LoadScene(GameConstants.GameplayScene, LoadSceneMode.Additive);
+        sceneController.LoadScene("Level_1_PC", LoadSceneMode.Additive);
         Time.timeScale = 0;
-        gameOver = false;
+        ResetLevel();
+    }
+
+    private void ResetLevel()
+    {
         maxCraftsOnScreen = 4;
         introPanel.SetActive(true);
         gameOverPanel.SetActive(false);
-        scoreBoard = FindObjectOfType<ScoreBoard>();
-        scoreBoard.SetScore(daysSinceLastIncident);
-        BlackoutWalls.SetActive(true);
+        daysSinceLastIncident = 0;
+        planesCollected = 0;
     }
 
-    internal void MouseClicked()
+    private void HandleSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        if (Time.timeScale == 0)
+        if(scene.name == GameConstants.GameplayScene)
         {
-            StartGame();
+            StartCoroutine(SetScore());
         }
+    }
+
+    private IEnumerator SetScore()
+    {
+        if (!_gameplayViewModel.HasValue)
+            yield return _gameplayViewModel.Wait;
+
+        _gameplayViewModel.Value.SetScore(daysSinceLastIncident);
     }
 
     public void StartGame()
     {
-        Time.timeScale = 1;
+        StartCoroutine(StartGameCoroutine());
+    }
+
+    public IEnumerator StartGameCoroutine()
+    {
+        gameOver = false;
+        gameStarted = true;
+        OnNewGame?.Invoke();
         introPanel.SetActive(false);
+
+        if (!_gameplayViewModel.HasValue)
+            yield return _gameplayViewModel.Wait;
+
+        _gameplayViewModel.Value.SetScore(daysSinceLastIncident);
+        _gameplayViewModel.Value.spawnManager.StartSpawner();
+        Time.timeScale = 1;
     }
 
     public void IncrementDay()
@@ -58,32 +94,28 @@ public class TheGameManager : Singleton<TheGameManager>
 
         if (!gameOver)
         {
-            scoreBoard.SetScore(daysSinceLastIncident);
+            StartCoroutine(SetScore());
         }
 
         switch (daysSinceLastIncident)
         {
             case 1:
-            {
-                SpawnManager.Instance.AddSpawnable(firstNewCraft);
+                _gameplayViewModel.Value.spawnManager.AddSpawnable(firstNewCraft);
                 break;
-            }
+
             case 3:
-            {
-                SpawnManager.Instance.AddSpawnable(secondNewCraft);
+                _gameplayViewModel.Value.spawnManager.AddSpawnable(secondNewCraft);
                 break;
-            }
+
             case 5:
-            {
-                SpawnManager.Instance.AddSpawnable(thirdNewCraft);
+                _gameplayViewModel.Value.spawnManager.AddSpawnable(thirdNewCraft);
                 break;
-            }
         }
 
         // Every two days increase spawn speed multipler
         if (daysSinceLastIncident % 2 == 1)
         {
-            SpawnManager.Instance.speedMultiplier += 1;
+            _gameplayViewModel.Value.spawnManager.speedMultiplier += 1;
         }
 
         ReCalcMaxCrafts();
@@ -108,6 +140,9 @@ public class TheGameManager : Singleton<TheGameManager>
     {
         if (gameOver) return;
 
+        // Save off any data we want to
+        // Award achievements
+
         gameOver = true;
         gameOverPanel.SetActive(true);
         string finalText = daysSinceLastIncident + " Days Since Last Incident";
@@ -123,9 +158,11 @@ public class TheGameManager : Singleton<TheGameManager>
         gameOverButton.gameObject.SetActive(true);
     }
 
-    public void ResetGame()
+    public void ReplayLevel()
     {
-        gameOverPanel.SetActive(false);
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        // Show advertisment
+
+
+        ResetLevel();
     }
 }

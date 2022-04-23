@@ -3,9 +3,11 @@ using System.Collections;
 using System.Linq;
 using UnityEngine;
 using UnityEditor;
+using System;
 
 public class Plane : MonoBehaviour
 {
+    public event Action<Plane> OnPlaneCrashed;
 
     public float speed;
     public float baseSpeed;
@@ -196,19 +198,19 @@ public class Plane : MonoBehaviour
             return;
         }
 
-        if (other.gameObject.layer.Equals(11))
+        if (other.gameObject.layer.Equals(GameConstants.CollidableLayer))
         {
             if (!transform.tag.Equals("Airstacles"))
             {
-                gameObject.transform.parent.gameObject.GetComponent<SpawnManager>().KillMe(this);
+                gameObject.transform.parent.gameObject.GetComponent<SpawnManager>().HandlePlaneCrashed(this);
                 GameObject newObject = (GameObject) Instantiate(explosion, this.transform.position, this.transform.rotation);
                 Destroy(newObject, 3f);
-                FindObjectOfType<TheGameManager>().GameOver();
+                FindObjectOfType<App>().GameOver();
             }
 
             Destroy(this.gameObject);
         }
-        else if (other.gameObject.layer.Equals(9) && other.gameObject.GetComponent<Collector>().side != finalDestination)
+        else if (other.gameObject.layer.Equals(GameConstants.CollectorLayer) && other.gameObject.GetComponent<Collector>().side != finalDestination)
         {
             inWallCollider = true;
             if (justSpawned) return;
@@ -246,8 +248,8 @@ public class Plane : MonoBehaviour
             //if it is correct collector tell game manager of success and destroy aircraft
             if (other.gameObject.GetComponent<Collector>().side == finalDestination)
             {
-                SpawnManager.Instance.KillMe(this);
-                TheGameManager.Instance.planesCollected++;
+                OnPlaneCrashed?.Invoke(this);
+                App.Instance.planesCollected++;
                 Destroy(gameObject);
             }
         }
@@ -256,7 +258,7 @@ public class Plane : MonoBehaviour
     public void InitAircraft(int speedMultiplier, Spawner.WallSide startingWall)
     {
 
-        speed = Random.Range((baseSpeed + speedMultiplier), ((baseSpeed + speedMultiplier) + speedRange));
+        speed = UnityEngine.Random.Range((baseSpeed + speedMultiplier), ((baseSpeed + speedMultiplier) + speedRange));
 
         // Set the planes final destiantion so we know when to score it and which signal light to set active
         switch (startingWall)
