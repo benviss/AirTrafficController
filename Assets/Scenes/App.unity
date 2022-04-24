@@ -1254,6 +1254,11 @@ PrefabInstance:
       objectReference: {fileID: 235946385}
     - target: {fileID: 114281940554763366, guid: bdf262acf8c1c6e43b8e69fce2d762b0,
         type: 3}
+      propertyPath: audioManager
+      value: 
+      objectReference: {fileID: 1505545603}
+    - target: {fileID: 114281940554763366, guid: bdf262acf8c1c6e43b8e69fce2d762b0,
+        type: 3}
       propertyPath: gameOverText
       value: 
       objectReference: {fileID: 666177812}
@@ -1295,8 +1300,77 @@ PrefabInstance:
       propertyPath: maxCraftsOnScreen
       value: 3
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 6831461132943445659, guid: bdf262acf8c1c6e43b8e69fce2d762b0, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: bdf262acf8c1c6e43b8e69fce2d762b0, type: 3}
+--- !u!1 &1505545602 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1462848472957710, guid: bdf262acf8c1c6e43b8e69fce2d762b0,
+    type: 3}
+  m_PrefabInstance: {fileID: 1505545601}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1505545603
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1505545602}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 36426cb010c5acc46ae3a4a01b834708, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Sounds:
+  - Name: spawn_1
+    Type: 2
+    Clip: {fileID: 8300000, guid: 22a2f91e5f626cc458369034575ba442, type: 3}
+    Volume: 0.1
+    Pitch: 1
+    Loop: 0
+    Source: {fileID: 0}
+  - Name: spawn_2
+    Type: 2
+    Clip: {fileID: 8300000, guid: e985134f66cc03242b9cfb666c71940f, type: 3}
+    Volume: 0.1
+    Pitch: 1
+    Loop: 0
+    Source: {fileID: 0}
+  - Name: spawn_3
+    Type: 2
+    Clip: {fileID: 8300000, guid: dc6076bbc9ea96545847086ddcbb7e13, type: 3}
+    Volume: 0.1
+    Pitch: 1
+    Loop: 0
+    Source: {fileID: 0}
+  - Name: spawn_4
+    Type: 2
+    Clip: {fileID: 8300000, guid: 768a4875d9cd6c047955e7ca4a4fd341, type: 3}
+    Volume: 0.1
+    Pitch: 1
+    Loop: 0
+    Source: {fileID: 0}
+  - Name: transmission_1
+    Type: 1
+    Clip: {fileID: 8300000, guid: da9bf1d2fca8a3f42af1137d9c14f7df, type: 3}
+    Volume: 0.5
+    Pitch: 1
+    Loop: 0
+    Source: {fileID: 0}
+  - Name: transmission_2
+    Type: 1
+    Clip: {fileID: 8300000, guid: 371a2a7a96309f64594a0f72904add58, type: 3}
+    Volume: 0.5
+    Pitch: 1
+    Loop: 0
+    Source: {fileID: 0}
+  - Name: transmission_3
+    Type: 1
+    Clip: {fileID: 8300000, guid: 4965bd8625a10f94eb908a7a62fb2f3d, type: 3}
+    Volume: 0.5
+    Pitch: 1
+    Loop: 0
+    Source: {fileID: 0}
 --- !u!1 &1626260557
 GameObject:
   m_ObjectHideFlags: 0
