@@ -55,6 +55,8 @@ public class Plane : MonoBehaviour
         serializedlight.FindProperty("m_DrawHalo").boolValue = true;
         serializedlight.ApplyModifiedProperties();
         alarmLight.enabled = false;
+
+        App.Instance.audioManager.PlaySpawnSound();
     }
 
     // Update is called once per frame
@@ -166,7 +168,7 @@ public class Plane : MonoBehaviour
 
         if ((Mathf.DeltaAngle(currentRotation, direction) > 90) || (Mathf.DeltaAngle(currentRotation, direction) == 0)) return false;
 
-        AudioManager.Instance.PlayTurnSound();
+        App.Instance.audioManager.PlayTransmissionSound();
 
         if (direction == 0)
         {

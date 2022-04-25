@@ -10,6 +10,8 @@ public class App : Singleton<App>
 
     public event Action OnNewGame;
 
+    [HideInInspector]
+    public AudioManager audioManager;
     public int maxCraftsOnScreen;
     [HideInInspector]
     public int daysSinceLastIncident;
@@ -32,6 +34,7 @@ public class App : Singleton<App>
     private void Awake()
     {
         sceneController = GetComponent<SceneController>();
+        audioManager = GetComponentInChildren<AudioManager>();
     }
 
     private void Start()
